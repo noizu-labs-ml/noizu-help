@@ -1,4 +1,5 @@
-# SMAH Architecture Overview 
+SMAH Architecture Overview 
+======================
 
 VERY ROUGH GENASSISTED DRAFT
 

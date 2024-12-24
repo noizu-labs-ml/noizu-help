@@ -1,4 +1,6 @@
-# User Personas for tje SMart as Hell Service Monitor And Helper (smah)
+Personas
+====
+User Personas for the SMart as Hell Service Monitor And Helper (smah)
 
 ## 1. Alex Johnson
 - **Background**: DevOps Engineer with 5 years of experience.

@@ -25,16 +25,23 @@ Ensure the environment is set up with the necessary dependencies before executin
 
 import logging
 import textwrap
+import traceback
 from typing import Optional
 
+from rich.traceback import Traceback
 from rich.prompt import Prompt
 
 import smah.console
-from smah.database import Database
+from smah.database import Database, Migration
 from smah.runner import Runner
 from smah.settings import Settings, configurator
 import smah.logs
 import smah.args
+
+from smah.console import std_console, err_console
+
+from types import SimpleNamespace
+
 from lxml import etree
 
 def pick_session(args) -> int:
@@ -92,6 +99,32 @@ def resume_session(args, session: Optional[int] = None):
         print("No previous session found.")
         exit(1)
 
+def init_database(args):
+    """
+    Initializes the database connection.
+
+    Args:
+        args (argparse.Namespace): The parsed command-line arguments.
+    """
+    try:
+        db = Database(args)
+        outcome, outcome_details = Migration.migrate(db, SimpleNamespace(silent=True, count=None, to=None), silent=True, exit_on_finish=False)
+
+        if outcome == "success":
+            logging.warning(f"[DB INIT (migrations applied)]: \"{outcome_details}\"")
+        elif outcome == "error":
+            error_type, error_details = outcome_details
+            logging.error(f"[DB INIT ({error_type})]: \"{error_details}\"")
+        else:
+            # Ignore no migrations were pending.
+            pass
+    except Exception as e:
+        logging.error(f"\n[DB INIT (exception)] - Failed to initialize database: {str(e)}\n---------- trace -------------\n{traceback.format_exc()}\n")
+        if args.rich:
+            t = Traceback()
+            err_console.print(t)
+        exit(1)
+
 def main():
     """
     The primary function that sets up application configuration and executes user-specified queries.
@@ -108,6 +141,8 @@ def main():
 
     try:
         args, pipe = smah.args.extract_args()
+
+        init_database(args)
 
         if args.resume:
             resume_session(args)

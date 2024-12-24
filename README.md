@@ -1,22 +1,23 @@
-SMAH
-===
+README
+======
+SMAH the SMart As Hell SysteM Admin Helper.
 
-Welcome to **SMAH** the `S`yste`M` `A`dmin `H`elper that just so happens to be
-`SM`art `A`s `H`ell), an early prototype of a suite of tools designed 
+Welcome to **SMAH** the **S**yste**M** **A**dmin **H**elper that just so happens to be
+**SM**art **A**s **H**ell, an early prototype of a suite of tools designed 
 to assist system administrators, data scientists, developers,
 and power users with system operations. 
 
 SMAH helps simplify tasks by providing command generation, 
 pipe processing and other tasks tailored to your background and operating system. 
 
-## Purpose
+### Purpose
 
 SMAH is designed to:
 1. **Generate Commands**: Avoid endless searches through documentation. Simply describe what you want to do, and SMAH generates the necessary command while explaining potential impacts and asking for confirmation before execution. You just want to use ffmpeg(tm) to convert a mp4 into a gif. 
 2. **Assisted Pipe Generation**: Take advantage of SMAH’s ability to assist in generating complex pipes and chaining commands in Unix environments.
 3. **AI-Assisted Monitoring (pending)**: Set up system monitoring tasks quickly with AI guidance, allowing you to keep track of critical metrics and thresholds without manual configuration.
 
-## Key Features
+### Key Features
 
 - **Interactive Command Generation**: SMAH can guide you through setting up environments, managing packages, configuring system services, and more, by generating commands and helping you understand their implications before execution. And ask questions as it (pending) process your query.
 - **User Preferences and Personalization**: SMAH remembers your preferences for certain tools (e.g., package managers, environment management tools) and uses those to generate optimal commands, saving time and reducing repetitive configuration.
@@ -25,19 +26,21 @@ SMAH is designed to:
 the best output format, runner model, additional instructions nad other details.
 
 
-# Installation
+## Installation
 
 
-## Pip Install
+### Pip Install
 ```
 pip install smah
-# call smah to begin setup. 
+## call smah to begin setup. 
 smah --setup
 ```
 
 or 
 
-## Local Build
+### Local Build
+@see [Contributing - Local Build Setup](CONTRIBUTING.md#local-development-setup)
+
 -  git checkout code
 - install poetry and python env. 
 - setup python env (conda, venv, etc.)
@@ -45,11 +48,11 @@ or
 - set SMAH_OPENAI_API_KEY env variable or set key in your smah config file `~/.smah/config.yaml`
 - run smah --setup
 
-# Examples
+## Examples
 
-##  Pipe Input Processing
+###  Pipe Input Processing
 
-### Log Audit to Pipe Output Format
+#### Log Audit to Pipe Output Format
 Analyze Access Log Entries
 
 ```sh
@@ -58,7 +61,7 @@ tail -n 500 /var/log/auth.log | smah -q "Analyze these access log entries and ou
 ![image](https://github.com/user-attachments/assets/445c0004-84db-46a9-b654-bb3c3692e73b)
 
 
-### System Control Summary
+#### System Control Summary
 ```
 systemctl status | smah -i ~/SCAN-SYSTEMCTL.md
 ```
@@ -66,19 +69,19 @@ systemctl status | smah -i ~/SCAN-SYSTEMCTL.md
 
 
 
-### System Task
+#### System Task
 ```sh
 smah -q "How do I setup a web proxy on this server that I can connect to via my remote desktop to access the web?"
  ```
 ![image](https://github.com/user-attachments/assets/b712fbd7-7e2b-4e1f-9320-71c48fe90e58)
 
-### Resume last chat 
+#### Resume last chat 
 
 ```sh
 smah --continue
 ```
 
-### Resume recent or (pending) search old conversations to pick up from.
+#### Resume recent or (pending) search old conversations to pick up from.
 
 ```sh
 smah --history
@@ -87,24 +90,24 @@ smah --history
 
 
 
-### Resume by id.
+#### Resume by id.
 
 ```sh
 smah --session ID
 ```
 
-### Interative Mode
+#### Interative Mode
 
 ```sh
 smah --interactive
 ```
 
-### Saved Prompt
+#### Saved Prompt
 ```
 systemctl status | smah -i ~/.scan-status.md 
 ```
 
-### Help
+#### Help
 ```
 > smah -h
 usage: smah [-h] [-q QUERY] [-i INSTRUCTIONS] [--interactive | --no-interactive] [-c CONFIG] [--database DATABASE] [--configure | --no-configure] [--continue | --no-continue] [--session SESSION] [--history | --no-history]
@@ -157,22 +160,22 @@ options:
 
 
 
-# Setup
+## Setup
 
 ```
 pip install smah
 ```
 
-## Getting Started
+### Getting Started
 When you run `smah` for the first time, it will guide you through a setup process to configure the necessary settings. Here is a step-by-step walkthrough of what the first run setup flow looks like:
 
-### 1. First Run
+#### 1. First Run
 ```sh
 smah
 ```
 
 
-# First Run Setup Flow
+## First Run Setup Flow
 
 On the first run you will be asked about your background, experience,
 and system details will be extracted or manually provided to reference 
@@ -184,7 +187,7 @@ in every request.
 
 After completing these steps, your `smah` tool will be configured and ready to use.
 
-### 3. Fine Tuning
+#### 3. Fine Tuning
 You can tweak model setting rules/weighthing currently by 
 manually editing the generated `~/.smah/config.yaml` file. 
 You can try differnt config options out with the `--config` arg
@@ -289,7 +292,7 @@ inference:
         - name: Data Analysis
           score: 0.5
         vsn: 0.0.1
-# ...        
+## ...        
       - name: o1-mini
         model: o1-mini
         description: o1 (mini)
@@ -341,11 +344,11 @@ inference:
 
 ```
 
-# Security
+## Security
 Do not pass sensitive data/details to Smah if your LLM will persist/track it, use a (pending) local model instead.
 Double check exec commands they may have errors and require edits prior to execution. 
 
-## Future Enhancements
+### Future Enhancements
 
 SMAH is in its early alpha stage, and we are actively working on the following enhancements:
 
@@ -360,41 +363,41 @@ SMAH is in its early alpha stage, and we are actively working on the following e
 9. **Enhanced Logging and Monitoring**: Improve the logging and monitoring system to provide more detailed insights and better auditability.
 10. **Secrets Management**: Implement secure storage and management of sensitive information, such as API keys and passwords.
 
-## 1-Year Roadmap
+### 1-Year Roadmap
 
-### Q1
+#### Q1
 - **Release Beta Version**: Transition from alpha to beta, incorporating initial user feedback and stabilizing core features.
 - **Expand Command Generation**: Add support for more complex commands and integrations with additional tools.
 - **Improve AI-Assisted Monitoring**: Enhance the AI's capabilities for setting up and managing system monitoring tasks.
 
-### Q2
+#### Q2
 - **Develop Interactive Terminal Interface**: Create a rich terminal-based user interface for better user interaction.
 - **Implement Multi-User Support**: Enable support for multiple user accounts with shared global configuration options.
 - **Strengthen Security Features**: Enhance security measures, especially for commands requiring elevated privileges.
 
-### Q3
+#### Q3
 - **Integrate with External Tools**: Enable seamless integration with other popular tools and services.
 - **Add Data Visualization**: Develop features for visualizing data trends and analysis results.
 - **Automate Reporting**: Implement automated reporting capabilities to save time on repetitive tasks.
 
-### Q4
+#### Q4
 - **Enhance Logging and Monitoring**: Improve the logging and monitoring system for better insights and auditability.
 - **Implement Secrets Management**: Develop secure storage and management of sensitive information.
 - **Prepare for General Availability**: Finalize features and prepare for a general availability release, ensuring stability and robustness.
 
-# Contributing
+## Contributing
 
 We welcome contributions to help improve SMAH. Here are some guidelines to get you started:
 
-## How to Contribute
+### How to Contribute
 
-### Feature Requests, Feedback and Bug Reports
+#### Feature Requests, Feedback and Bug Reports
 
 - Use the GitHub issues tracker to report bugs or suggest features.
 - Provide as much detail as possible, including steps to reproduce the issue.
 _ When use user-story style at the openning of feature/change requests.
 
-### Bug Fixes and Code Changes
+#### Bug Fixes and Code Changes
  
 1. Fork the Repository: Create a personal fork of the repository on GitHub.
 2. Create a Feature: Create a new branch for your feature or bugfix.
@@ -404,22 +407,22 @@ _ When use user-story style at the openning of feature/change requests.
    and split into sub branches/pull requests. 
 5. Make A Pull Request - give details on what you've changed/fixed.
 
-### Code Style
+#### Code Style
 
 - When Possible Follow the existing code style and conventions unless overhauling format/layout only (I suggest asking first.) 
 - Write clear, concise, and descriptive commit messages.
 - Use Type Hints and Doc Tags. 
 - Ensure your code is well-documented. Consider md and mermaid diagrams for complax/major changes.
 
-### Testing
+#### Testing
 
 - Write pytests for any new features or bug fixes.
 - Ensure all tests pass before submitting a pull request.
 
 
-## Code of Conduct
+### Code of Conduct
 
 Be Kind.
 
-# License
+## License
 [MIT](./LICENSE)

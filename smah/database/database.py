@@ -18,9 +18,12 @@ class Database:
 
     def __init__(self, args):
         file = args.database or self.default_database()
+        migrate = False
         if not os.path.exists(file):
             os.makedirs(os.path.dirname(file), exist_ok=True)
+            migrate = True
         self.connection: sqlite3.Connection = sqlite3.connect(file)
+
 
     def last_session(self):
         cursor = self.connection.cursor()

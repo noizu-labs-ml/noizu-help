@@ -59,7 +59,7 @@ class Migration:
         return migrations
 
     @staticmethod
-    def apply_migration(database: Database, migration: dict):
+    def apply_migration(database: Database, migration: dict, silent: bool = False, exit_on_finish: bool = True) -> tuple:
         cursor = database.connection.cursor()
         module = importlib.import_module(f"smah.database.migrations.{migration['file'][:-3]}")
         cursor.execute("BEGIN TRANSACTION")
@@ -77,15 +77,26 @@ class Migration:
             )
             cursor.execute("COMMIT")
             cursor.close()
-            print(f"Applied Migration {migration['file']}")
+            r = f"Applied Migration {migration['file']}"
+            if not silent:
+                print(r)
+            return "success", r
+
         except Exception as e:
             cursor.execute("ROLLBACK")
             cursor.close()
-            print(f"Error Applying Migration {migration['file']}: {e}")
-            exit(2)
+            r = f"Error Applying Migration {migration['file']}: {e}"
+            if not silent:
+                print(r)
+            if exit_on_finish:
+                exit(2)
+            return ("error", ("Migration Failed", r))
+
+
+
 
     @staticmethod
-    def rollback_migration(database: Database, migration: dict):
+    def rollback_migration(database: Database, migration: dict, silent: bool = False, exit_on_finish: bool = True) -> tuple:
         cursor = database.connection.cursor()
         module = importlib.import_module(f"smah.database.migrations.{migration['file'][:-3]}")
         cursor.execute("BEGIN TRANSACTION")
@@ -103,15 +114,27 @@ class Migration:
             )
             cursor.execute("COMMIT")
             cursor.close()
-            print(f"Reverted Migration '{migration['file']}'")
+            r = f"Reverted Migration '{migration['file']}'"
+            if not silent:
+                print(r)
+            return "success", r
         except Exception as e:
             cursor.execute("ROLLBACK")
             cursor.close()
-            print(f"Error Reverting Migration '{migration['file']}': {e}")
-            exit(2)
+            r = f"Error Reverting Migration '{migration['file']}': {e}"
+            if not silent:
+                print(r)
+            if exit_on_finish:
+                exit(2)
+            return "error", ("Rollback Failed", r)
 
     @staticmethod
-    def migrate(database: Database, args: argparse.Namespace):
+    def migrate(
+            database: Database,
+            args: argparse.Namespace,
+            silent: bool = False,
+            exit_on_finish: bool = True
+    ) -> tuple:
         count = 0
         available_migrations = Migration.get_migrations()
         tracked_migrations = {m['migration']: m for m in Migration.get_schema_migrations(database)}
@@ -121,29 +144,68 @@ class Migration:
             tracked = tracked_migrations.get(migration['file'])
             if tracked and tracked['applied']:
                 if tracked['checksum'] != migration['checksum']:
-                    print(f"Checksum Mismatch in {migration['file']}: expected {tracked['checksum']} but got {migration['checksum']}")
+
+                    r = f"Checksum Mismatch in {migration['file']}: expected {tracked['checksum']} but got {migration['checksum']}"
+                    if not silent:
+                        print(r)
+
                     if args.reset_checksums:
                         cursor = database.connection.cursor()
                         cursor.execute("UPDATE schema_migrations SET checksum = ? WHERE migration = ?", (migration['checksum'], migration['file']))
                         cursor.close()
                     else:
-                        exit(1)
+                        if exit_on_finish:
+                            exit(1)
+                        else:
+                            return "error", ("Checksum Mismatch", r)
+
                 if args.to and args.to == migration['file']:
-                    print(f"Migration Complete: changes applied {count}")
-                    exit(0)
+                    r = f"Migration Complete: changes applied {count}"
+                    if not silent:
+                        print(r)
+                    if exit_on_finish:
+                        exit(0)
+                    else:
+                        return "success", r
             else:
-                Migration.apply_migration(database, migration)
+                outcome, details = Migration.apply_migration(database, migration, silent=silent, exit_on_finish=exit_on_finish)
+                if outcome == "error":
+                    if exit_on_finish:
+                        exit(2)
+                    else:
+                        return outcome, details
+
                 count += 1
                 if args.count and count >= args.count:
-                    print(f"Migration Complete: changes applied {count}")
-                    exit(0)
+                    r = f"Migration Complete: changes applied {count}"
+                    if not silent:
+                        print(r)
+                    if exit_on_finish:
+                        exit(0)
+                    else:
+                        return "success", r
+
                 if args.to and args.to == migration['file']:
-                    print(f"Migration Complete: changes applied {count}")
-                    exit(0)
+                    r = f"Migration Complete: changes applied {count}"
+                    if not silent:
+                        print(r)
+
+                    if exit_on_finish:
+                        exit(0)
+                    else:
+                        return "success", r
+
         if count == 0:
-            print("No Migrations Pending")
+            r = "No Migrations Pending"
+            if not silent:
+                print(r)
+            return "nop", r
         else:
-            print(f"Migration Complete: changes applied {count}")
+            r = f"Migration Complete: changes applied {count}"
+            if not silent:
+                print(r)
+            return "success", r
+
 
     @staticmethod
     def rollback(database: Database, args: argparse.Namespace):
