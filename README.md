@@ -1,8 +1,10 @@
 README
 ======
 
-[documentation]("https://smah.readthedocs.io/en/latest/")
-[git]("https://github.com/noizu-labs-ml/smah")
+
+[documentation](https://smah.readthedocs.io/en/latest/)
+
+[git](https://github.com/noizu-labs-ml/smah)
 
 
 SMAH the SMart As Hell SysteM Admin Helper.
