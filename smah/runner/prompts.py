@@ -247,7 +247,7 @@ class Prompts:
             inference.to_yaml({"prompt": True}),
             sort_keys=False)
         message = textwrap.dedent(
-            f"""
+            """
             # MODEL SELECTION PROMPT
             You are the Model Selector.
             Based on your operator, system settings and the specific request below you will select the best model by id from the list models to process with.
